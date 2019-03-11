@@ -1,12 +1,18 @@
-package s3
+package s3core
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+)
+
+var (
+	emptyerr error = errors.New("this bucket is empty")
 )
 
 func NewClient(endpoint string, key string, secret string) *s3.S3 {
@@ -45,15 +51,19 @@ func ListObjs(svc *s3.S3, bucket string, t *string, ch chan string) error {
 		}
 		return err
 	}
+	if len(result.Contents) == 0 {
+		fmt.Println("bucket is empty")
+		return emptyerr
+	}
 
 	for _, objname := range result.Contents {
-		ch <- objname
+		ch <- *objname.Key
 	}
-	*t = result.ContinuationToken
+	t = result.ContinuationToken
 	return nil
 }
 
-func DeleteObj(svc *s3.S3, bucket, obj string) {
+func DeleteObj(svc *s3.S3, bucket, obj string) error {
 	input := &s3.DeleteObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(obj),
@@ -61,10 +71,9 @@ func DeleteObj(svc *s3.S3, bucket, obj string) {
 
 	_, err := svc.DeleteObject(input)
 	if err != nil {
-		fmt.Printf("%s: delete error", obj)
-		return
-	} else {
-		fmt.Printf("%s: delete success", obj)
-		return
+		fmt.Printf("%s: delete error\n", obj)
+		return err
 	}
+	fmt.Printf("%s: delete success\n", obj)
+	return nil
 }
