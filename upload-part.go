@@ -32,7 +32,7 @@ func main() {
 		fmt.Fprint(os.Stderr, usage)
 	}
 	flag.Parse()
-	svc := newClient("http://1.29.3.17:80", "e8nMRTDu3WE1", "aNU34yPAGNtXE1yv0kZrk4")
+	svc := newClient("http://10.29.3.17:80", "e8nMRTDu3WE1", "aNU34yPAGNtXE1yv0kZrk4")
 
 	ticker := time.NewTicker(3 * time.Hour)
 	for {

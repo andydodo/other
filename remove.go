@@ -51,15 +51,16 @@ func ListObjs(svc *s3.S3, bucket string, t *string, ch chan string) error {
 		}
 		return err
 	}
-	if len(result.Contents) == 0 {
-		fmt.Println("bucket is empty")
-		return emptyerr
+
+	if result.NextContinuationToken == nil {
+		return errors.New("bucket is empty")
 	}
 
 	for _, objname := range result.Contents {
 		ch <- *objname.Key
 	}
-	t = result.ContinuationToken
+
+	*t = *result.NextContinuationToken
 	return nil
 }
 
