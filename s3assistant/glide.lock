@@ -1,0 +1,82 @@
+hash: 1a0226ac1b6dc5b970d0502c6e24f4cf9a6a4be1c376c41c866a3bfff372af32
+updated: 2019-03-19T19:14:24.812248011+08:00
+imports:
+- name: github.com/aws/aws-sdk-go
+  version: feefc6935e1c1612ee89ae0049db4d71b5cf84c5
+  subpackages:
+  - aws
+  - aws/awserr
+  - aws/awsutil
+  - aws/client
+  - aws/client/metadata
+  - aws/corehandlers
+  - aws/credentials
+  - aws/credentials/ec2rolecreds
+  - aws/credentials/endpointcreds
+  - aws/credentials/processcreds
+  - aws/credentials/stscreds
+  - aws/csm
+  - aws/defaults
+  - aws/ec2metadata
+  - aws/endpoints
+  - aws/request
+  - aws/session
+  - aws/signer/v4
+  - internal/ini
+  - internal/s3err
+  - internal/sdkio
+  - internal/sdkrand
+  - internal/sdkuri
+  - internal/shareddefaults
+  - private/protocol
+  - private/protocol/eventstream
+  - private/protocol/eventstream/eventstreamapi
+  - private/protocol/query
+  - private/protocol/query/queryutil
+  - private/protocol/rest
+  - private/protocol/restxml
+  - private/protocol/xml/xmlutil
+  - service/s3
+  - service/sts
+- name: github.com/go-ole/go-ole
+  version: 97b6244175ae18ea6eef668034fd6565847501c9
+  subpackages:
+  - oleutil
+- name: github.com/gomodule/redigo
+  version: b47395aa17662ff86cb5c52f3bf669bf842ec27a
+  subpackages:
+  - redis
+- name: github.com/gorilla/mux
+  version: c5c6c98bc25355028a63748a498942a6398ccd22
+- name: github.com/jmespath/go-jmespath
+  version: c2b33e8439af944379acbdd9c3a5fe0bc44bd8a5
+- name: github.com/satori/go.uuid
+  version: b2ce2384e17bbe0c6d34077efa39dbab3e09123b
+- name: github.com/shirou/gopsutil
+  version: 381f7cc0bf4ccb60157fd5c6eaabfdfc681e6c2f
+  subpackages:
+  - internal/common
+  - mem
+- name: github.com/StackExchange/wmi
+  version: e0a55b97c70558c92ce14085e41b35a894e93d3d
+- name: go.uber.org/atomic
+  version: 1ea20fb1cbb1cc08cbd0d913a96dead89aa18289
+- name: go.uber.org/multierr
+  version: 3c4937480c32f4c13a875a1829af76c98ca3d40a
+- name: go.uber.org/zap
+  version: d2a364dac1d9b70c651d9f47381c5912361e5596
+  subpackages:
+  - buffer
+  - internal/bufferpool
+  - internal/color
+  - internal/exit
+  - zapcore
+- name: golang.org/x/sys/unix
+  version: 6c81ef8f67ca3f42fc9cd71dfbd5f35b0c4b5771
+- name: golang.org/x/sys/windows
+  version: 6c81ef8f67ca3f42fc9cd71dfbd5f35b0c4b5771
+- name: gopkg.in/natefinch/lumberjack.v2
+  version: a96e63847dc3c67d17befa69c303767e2f84e54f
+- name: gopkg.in/yaml.v2
+  version: 51d6538a90f86fe93ac480b35f37b2be17fef232
+testImports: []

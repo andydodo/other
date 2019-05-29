@@ -1,0 +1,19 @@
+src_meta_conf:
+  redis_ip: 10.202.4.251
+  redis_port: 6383
+  redis_passwd: 71922bd935116547
+  redis_timeout_s: 60
+  redis_idle_timeout_s: 20
+  redis_db: 0
+broker:
+  redis_pool_conf:
+    redis_ip: 10.203.39.135
+    redis_port: 34567
+    redis_passwd: 12345678
+    redis_timeout_s: 60
+    redis_idle_timeout_s: 20
+    redis_db: 0
+queue: celery
+log_dir: ./producer-log
+log_level: 1  
+

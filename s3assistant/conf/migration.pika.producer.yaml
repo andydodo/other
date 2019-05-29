@@ -1,0 +1,16 @@
+src_s3_conf:
+  endpoint: http://10.203.39.135:80
+  access_key: ZcOJ8Rqu183u8XArk5Jh
+  secret_key: 4Oxh9nJX0COsvF1Wi3vYumIi7k34X8AkzRCIVtMC
+broker:
+  redis_pool_conf:
+    redis_ip: 10.203.39.135
+    redis_port: 34567
+    redis_passwd: 12345678
+    redis_timeout_s: 60
+    redis_idle_timeout_s: 20
+    redis_db: 0
+queue: celery
+log_dir: ./producer-log
+log_level: 1  
+

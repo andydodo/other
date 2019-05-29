@@ -1,0 +1,20 @@
+package: s3assistant
+import:
+- package: github.com/aws/aws-sdk-go
+  subpackages:
+  - aws
+  - aws/awserr
+  - aws/credentials
+  - aws/session
+  - service/s3
+- package: github.com/gomodule/redigo
+  subpackages:
+  - redis
+- package: github.com/shirou/gopsutil
+  subpackages:
+  - mem
+- package: go.uber.org/zap
+  subpackages:
+  - zapcore
+- package: gopkg.in/natefinch/lumberjack.v2
+- package: gopkg.in/yaml.v2
