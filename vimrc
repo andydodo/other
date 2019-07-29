@@ -33,7 +33,7 @@ set tags=tags;/
 ""    Vim 插件配置
 "===================================
 
-" set the runtime path to include Vundle and initialize
+"set the runtime path to include Vundle and initialize
 set rtp+=~/Env/vim/bundle/Vundle.vim
 
 call vundle#begin("~/Env/vim/bundle")
@@ -63,7 +63,7 @@ Plugin 'bling/vim-airline'
 set laststatus=2
 "let g:airline_theme="molokai"
 let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#whitespace#enabled = 0    " 关闭状态显示空白符号计数
+let g:airline#extensions#whitespace#enabled = 0    "关闭状态显示空白符号计数
 let g:airline#extensions#whitespace#symbol = '!'
 let g:airline_left_sep = ''
 let g:airline_left_alt_sep = ''
@@ -93,7 +93,7 @@ Plugin 'fatih/vim-go'
 Plugin 'dracula/vim'
 Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets'
-call vundle#end()            " required
+call vundle#end()            "required
 
 " 防止YCM和Ultisnips的TAB键冲突，禁止YCM的TAB
 let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
@@ -101,8 +101,8 @@ let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 
 "==================================
 ""    Vim基本配置
-"===================================
-""关闭vi的一致性模式 避免以前版本的一些Bug和局限
+"==================================
+""关闭vi的一致性模式, 避免以前版本的一些Bug和局限
 set nocompatible
 ""主题配色
 set background=dark
@@ -118,7 +118,7 @@ set hls
 "突出现实当前行列
 set cursorline
 "set cursorcolumn
-""设置匹配模式 类似当输入一个左括号时会匹配相应的那个右括号
+""设置匹配模式, 类似当输入一个左括号时会匹配相应的那个右括号
 set showmatch
 "设置C/C++方式自动对齐
 set autoindent
