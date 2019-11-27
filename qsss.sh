@@ -1,6 +1,10 @@
 #!/bin/expect
 set timeout 30
-spawn ssh -l somebody 127.0.0.1
-expect "password:"
-send "alialiali\r"
+set username [lindex $argv 0]
+set ip [lindex $argv 1]
+spawn ssh -l ${username} ${ip}
+expect {
+  "yes/no" { send "yes\r"; exp_continue }
+  "password:" { send "somebody\r" }
+}
 interact
