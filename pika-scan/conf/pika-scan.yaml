@@ -1,0 +1,10 @@
+redis_pool_conf:
+  redis_ip: 
+  redis_port: 
+  redis_passwd: 
+  redis_db: 0
+  redis_timeout_s: 60
+  redis_idle_timeout_s: 20
+bucket: s3-monitor
+log_dir: /tmp/log
+log_level: 1
