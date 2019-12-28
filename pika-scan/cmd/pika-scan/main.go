@@ -4,16 +4,17 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"sync"
-
-	//"net/http"
-	//"net/http/pprof"
+	"net/http"
+	"net/http/pprof"
 	"os"
+	"strconv"
+	"strings"
+	"sync"
 
 	"github.com/andy/pika-scan/common"
 	"github.com/andy/pika-scan/scan"
 	"github.com/andy/pika-scan/util"
-	//"github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 )
 
 const (
@@ -27,13 +28,19 @@ const (
 var (
 	bucketName = flag.String("bucket", "", "Which bucket need to scan")
 	configFile = flag.String("config", "", "PikaScanOptions config file path")
+	maxInt     = flag.Int("length", 100, "PikaScanOptions length of producer queue")
+	numWorker  = flag.Int("numbers", 10, "PikaScanOptions number of consumer worker")
+	port       = flag.Int("port", 9527, "PikaScanOptions port of listen on scan")
 )
 
 var usage = `Usage: pika-scan [options...] <path>
 
   Options:
-      -bucket which bucket need to scan 
-      -config scan pika config file path 
+      -bucket  which bucket need to scan 
+      -config  scan pika config file path 
+      -length  length of producer queue
+      -numbers number of consumer worker 
+      -port    port of listen on scan web server 
 
 `
 
@@ -47,7 +54,19 @@ func newConsumer(h *scan.ScanRedisHandler) *consumer {
 	}
 }
 
-func (c *consumer) start(ch <-chan string, id int) {
+type producer struct {
+	channel chan string
+	bucket  string
+}
+
+func newProducer(ch chan string, bucketName string) *producer {
+	return &producer{
+		channel: ch,
+		bucket:  bucketName,
+	}
+}
+
+func (c *consumer) start(ch chan string, id int) {
 	for {
 		select {
 		case object, ok := <-ch:
@@ -57,11 +76,39 @@ func (c *consumer) start(ch <-chan string, id int) {
 			}
 			mp, err := c.hand.GETObjToFid(object)
 			if err != nil {
-				log.Printf("exit groutine id: %v beacuse of: %s \n", id, err.Error())
+				log.Printf("exit groutine id: %v beacuse of get object to fid: %s \n", id, err.Error())
 				return
 			}
-			fmt.Println(mp)
+
+			for i := len(mp.Fids) - 1; i >= 0; i-- {
+				fid := strings.Trim(mp.Fids[i], "")
+				if fid != "" {
+					fmt.Print(mp.Object, "\t", fid, "\r\n")
+				}
+			}
+
 		}
+	}
+}
+
+func (p *producer) statusHandler(w http.ResponseWriter, r *http.Request) {
+	m := make(map[string]interface{})
+	m["Bucket"] = p.bucket
+	m["Channel"] = len(p.channel)
+	common.WriteJson(w, r, http.StatusOK, m)
+}
+
+func startPprof(p *producer) {
+	r := mux.NewRouter()
+	r.HandleFunc("/status", p.statusHandler)
+	r.HandleFunc("/debug/pprof/", pprof.Index)
+	r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	r.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	r.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	r.HandleFunc("/debug/pprof/trace", pprof.Trace)
+
+	if err := http.ListenAndServe(":"+strconv.Itoa(*port), r); err != nil {
+		log.Fatalf("cannot start pika scan: %s", err.Error())
 	}
 }
 
@@ -72,7 +119,6 @@ func main() {
 
 	flag.Parse()
 
-	//go startPprof()
 	handler, err := CreateHandler()
 	if err != nil {
 		log.Println(err.Error())
@@ -81,27 +127,12 @@ func main() {
 	consumer := newConsumer(handler)
 	//objList := MakeObjectList(handler.Config.Bucket)
 	objList := MakeObjectList(*bucketName)
-	ch := make(chan string, 1000)
+	ch := make(chan string, *maxInt)
+	producer := newProducer(ch, *bucketName)
+	go startPprof(producer)
 	var wg sync.WaitGroup
 
-	/*
-		go func(ch <-chan string) {
-			for {
-				object, ok := <-ch
-				if !ok {
-					fmt.Println("nil")
-					return
-				}
-				mp, err := handler.GETObjToFid(object)
-				if err != nil {
-					log.Println(err.Error())
-					return
-				}
-				fmt.Println(mp)
-			}
-		}(ch)
-	*/
-	for i := 0; i < 10; i++ {
+	for i := 0; i < *numWorker; i++ {
 		wg.Add(1)
 		go func(ch chan string, i int) {
 			defer wg.Done()
@@ -109,37 +140,21 @@ func main() {
 		}(ch, i)
 	}
 
-	_, er := handler.SCANBucketObjs(objList, "1000", ch)
-	if er != nil {
-		log.Println(er.Error())
-	}
-	/*
-		for _, v := range res {
-			mp, e := handler.GETObjToFid(v)
-			if e != nil {
-				log.Println(e.Error())
-				return
+	go func(h *scan.ScanRedisHandler, objlist string, maxint string, channel chan string) {
+		defer close(channel)
+		files, err := h.SCANBucketObjs(objlist, maxint)
+		if err != nil {
+			log.Printf("scan bucket file failed %s", err.Error())
+		} else {
+			for i := range files {
+				channel <- files[i]
 			}
-			fmt.Println(mp)
 		}
-	*/
+	}(handler, objList, strconv.Itoa(*maxInt), ch)
+
 	wg.Wait()
-}
 
-/*
-func startPprof() {
-	r := mux.NewRouter()
-	r.HandleFunc("/debug/pprof/", pprof.Index)
-	r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
-	r.HandleFunc("/debug/pprof/profile", pprof.Profile)
-	r.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
-	r.HandleFunc("/debug/pprof/trace", pprof.Trace)
-
-	if err := http.ListenAndServe(":9527", r); err != nil {
-		log.Fatalf("cannot start pika scan: %s", err)
-	}
 }
-*/
 
 func MakeObjectList(bucket string) string {
 	return OBJECT_PREFIX + STRING_GLUE + bucket + STRING_GLUE + SCAN_PATTERN
