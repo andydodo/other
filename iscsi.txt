@@ -1,0 +1,23 @@
+2.iscsi 
+yum install scsi-target-utils
+
+新建
+tgtadm --lld iscsi --op new --mode target --tid 1 -T iqn.20013-10.com.redhat
+
+查看链接
+tgtadm --lld iscsi --op show --mode conn --tid 1
+
+添加逻辑卷到target
+tgtadm --lld iscsi --op new --mode logicalunit --tid 1 --lun 1 -b /mnt/disk3
+
+所有都能连
+tgtadm --lld iscsi --op bind --mode target --tid 1 -I ALL
+
+3.客户端发现target
+iscsiadm --mode discovery --type sendtargets --portal 10.191.8.85
+
+4.客户端登录
+iscsiadm --mode node --targetname iqn.2001-04.com.example:storage.disk1.amiens.sys1.xyz --portal 192.168.1.2:3260 --login
+
+5.客户端退出
+iscsiadm  -m node -T iqn.2020-07.com.redhat  -p 10.191.8.85 -u
